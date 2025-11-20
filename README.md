@@ -1,5 +1,13 @@
 # 云农谷引流原型设计
 
+## 🌐 在线访问
+
+**GitHub Pages:** [https://dpxj.github.io/TYKI-YNG_liuliang_yunying/](https://dpxj.github.io/TYKI-YNG_liuliang_yunying/)
+
+点击上方链接即可在线浏览完整的原型设计！
+
+---
+
 ## 📋 项目概述
 
 这是一套完整的小程序流量运营原型设计，展示了如何将**机井管护平台**的2万+存量用户低成本引流至**云农谷**平台，并通过社交裂变实现二次增长。
