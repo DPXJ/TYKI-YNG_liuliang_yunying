@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享功能演示 - 云农谷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode { background: none !important; padding: 0 !important; margin: 0 !important; width: 100%; height: auto; overflow: visible; display: block !important; justify-content: flex-start !important; align-items: flex-start !important; }
+        body.embed-mode { min-height: 100%; }
+        body.embed-mode .phone-frame { width: 100% !important; height: auto !important; min-height: 100% !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; position: relative; }
+        body.embed-mode .phone-notch { display: none !important; }
+        body.embed-mode .phone-screen { border-radius: 0 !important; width: 100% !important; min-height: 100% !important; height: auto !important; overflow-y: visible !important; overflow-x: hidden; background: #f5f5f5; }
+        body.embed-mode .status-bar { display: none !important; }
+        body.embed-mode .phone-screen::-webkit-scrollbar { width: 0; display: none; }
+        body.embed-mode .phone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        body.embed-mode .back-button { display: none !important; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* 内容区 */
+        .content {
+            padding: 20px 15px;
+        }
+        
+        .page-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .page-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 25px;
+        }
+        
+        /* 分享按钮 */
+        .share-button {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        /* 分享面板 */
+        .share-panel-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        
+        .share-panel-overlay.show {
+            display: flex;
+        }
+        
+        .share-panel {
+            background: white;
+            border-radius: 20px 20px 0 0;
+            padding: 25px 20px 35px;
+            width: 351px;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+        
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .share-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .share-icon-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+        
+        .icon-wechat { background: linear-gradient(135deg, #09bb07 0%, #078d05 100%); }
+        .icon-moments { background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%); }
+        .icon-link { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .icon-poster { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+        
+        .share-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .cancel-button {
+            width: 100%;
+            background: #f3f4f6;
+            color: #6b7280;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        
+        /* 分享卡片预览 */
+        .share-preview-section {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .preview-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+        }
+        
+        .miniprogram-card {
+            background: #f9fafb;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e5e7eb;
+        }
+        
+        .miniprogram-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .card-image {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            flex-shrink: 0;
+        }
+        
+        .card-content {
+            flex: 1;
+        }
+        
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 6px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        
+        .card-desc {
+            font-size: 12px;
+            color: #6b7280;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .card-badge {
+            display: inline-block;
+            background: #10b981;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            margin-top: 6px;
+        }
+        
+        /* 海报预览 */
+        .poster-preview {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .poster-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .poster-logo {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            margin: 0 auto 10px;
+        }
+        
+        .poster-title-large {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .poster-subtitle {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        
+        .poster-content {
+            background: #f0fdf4;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .poster-main-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #059669;
+            line-height: 1.6;
+        }
+        
+        .poster-qr {
+            text-align: center;
+        }
+        
+        .qr-code {
+            width: 120px;
+            height: 120px;
+            background: #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0 auto 10px;
+        }
+        
+        .qr-hint {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>10:05</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <div class="header">
+                <div class="header-left">
+                    <div class="back-icon" onclick="history.back()">←</div>
+                    <div class="header-title">分享功能演示</div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="page-title">分享与裂变</div>
+                <div class="page-desc">
+                    通过社交分享功能，让更多用户了解云农谷的优质服务，实现用户增长
+                </div>
+                
+                <!-- 分享按钮 -->
+                <button class="share-button" onclick="showSharePanel()">
+                    <span>↗️</span>
+                    <span>点击分享给好友</span>
+                </button>
+                
+                <!-- 分享卡片预览 -->
+                <div class="share-preview-section">
+                    <div class="preview-title">📱 小程序卡片样式</div>
+                    <div class="miniprogram-card" onclick="alert('点击卡片将打开对应功能页')">
+                        <div class="card-image">🌾</div>
+                        <div class="card-content">
+                            <div class="card-title">我家麦子叶发黄，用AI一拍就知道</div>
+                            <div class="card-desc">AI病虫害识别，3秒出结果，准确率98%</div>
+                            <span class="card-badge">云农谷小程序</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 海报预览 -->
+                <div class="share-preview-section">
+                    <div class="preview-title">🎨 分享海报样式</div>
+                    <div class="poster-preview">
+                        <div class="poster-header">
+                            <div class="poster-logo">🌾</div>
+                            <div class="poster-title-large">云农谷</div>
+                            <div class="poster-subtitle">种好地 管好田 算好账 卖好价</div>
+                        </div>
+                        
+                        <div class="poster-content">
+                            <div class="poster-main-text">
+                                别瞎施肥了！<br>
+                                查查咱村土壤缺啥<br>
+                                科学配方省钱增产
+                            </div>
+                        </div>
+                        
+                        <div class="poster-qr">
+                            <div class="qr-code">二维码区域</div>
+                            <div class="qr-hint">长按识别小程序码</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="height: 30px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 分享面板 -->
+    <div class="share-panel-overlay" id="sharePanel" onclick="hideSharePanel()">
+        <div class="share-panel" onclick="event.stopPropagation()">
+            <div class="panel-title">分享到</div>
+            <div class="share-options">
+                <div class="share-option" onclick="shareToWechat()">
+                    <div class="share-icon-circle icon-wechat">💬</div>
+                    <div class="share-label">微信好友</div>
+                </div>
+                <div class="share-option" onclick="shareToMoments()">
+                    <div class="share-icon-circle icon-moments">🔵</div>
+                    <div class="share-label">朋友圈</div>
+                </div>
+                <div class="share-option" onclick="copyLink()">
+                    <div class="share-icon-circle icon-link">🔗</div>
+                    <div class="share-label">复制链接</div>
+                </div>
+                <div class="share-option" onclick="generatePoster()">
+                    <div class="share-icon-circle icon-poster">🎨</div>
+                    <div class="share-label">生成海报</div>
+                </div>
+            </div>
+            <button class="cancel-button" onclick="hideSharePanel()">取消</button>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function showSharePanel() {
+            document.getElementById('sharePanel').classList.add('show');
+        }
+        
+        function hideSharePanel() {
+            document.getElementById('sharePanel').classList.remove('show');
+        }
+        
+        function shareToWechat() {
+            hideSharePanel();
+            alert('分享到微信好友\n\n实际场景中会调用微信分享API\n分享参数包含:\n- title: 页面标题\n- desc: 页面描述\n- imageUrl: 分享图标\n- path: 小程序路径\n- source: 来源标识');
+        }
+        
+        function shareToMoments() {
+            hideSharePanel();
+            alert('分享到朋友圈\n\n实际场景中会生成分享海报或调用API');
+        }
+        
+        function copyLink() {
+            hideSharePanel();
+            alert('链接已复制到剪贴板\n\nhttps://yunnongu.com/share?page=ai&source=user_share');
+        }
+        
+        function generatePoster() {
+            hideSharePanel();
+            alert('正在生成分享海报...\n\n实际场景中会:\n1. 调用后端生成海报图片\n2. 包含小程序码\n3. 用户保存到相册\n4. 分享到微信群');
+        }
+    </script>
+</body>
+</html>
+

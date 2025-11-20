@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报修成功 - AI服务引流</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode {
+            background: none !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100%;
+            height: auto;
+            overflow: visible;
+            display: block !important;
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+        }
+        body.embed-mode {
+            min-height: 100%;
+        }
+        body.embed-mode .phone-frame {
+            width: 100% !important;
+            height: auto !important;
+            min-height: 100% !important;
+            border-radius: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            box-shadow: none !important;
+            background: transparent !important;
+            position: relative;
+        }
+        body.embed-mode .phone-notch {
+            display: none !important;
+        }
+        body.embed-mode .phone-screen {
+            border-radius: 0 !important;
+            width: 100% !important;
+            min-height: 100% !important;
+            height: auto !important;
+            overflow-y: visible !important;
+            overflow-x: hidden;
+            background: #f5f5f5;
+        }
+        body.embed-mode .status-bar {
+            display: none !important;
+        }
+        body.embed-mode .phone-screen::-webkit-scrollbar {
+            width: 0;
+            display: none;
+        }
+        body.embed-mode .phone-screen {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body.embed-mode .back-button {
+            display: none !important;
+        }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 状态栏 */
+        .status-bar {
+            height: 44px;
+            background: #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* 头部 */
+        .header {
+            background: #3b82f6;
+            padding: 15px;
+            color: white;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        /* 成功图标区 */
+        .success-section {
+            text-align: center;
+            padding: 40px 20px 30px;
+            background: linear-gradient(180deg, #f0f9ff 0%, white 100%);
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 20px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        
+        .success-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .success-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        /* 工单信息 */
+        .order-info {
+            background: white;
+            margin: 20px 15px;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .order-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #3b82f6;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+        
+        .order-label {
+            color: #6b7280;
+        }
+        
+        .order-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        /* 🎯 AI服务引流卡片 - 核心功能 */
+        .ai-service-card {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            margin: 20px 15px;
+            padding: 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .ai-service-card:hover {
+            transform: translateY(-4px);
+        }
+        
+        .ai-service-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30px;
+            width: 150px;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(20deg);
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(255,255,255,0.25);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .ai-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .ai-desc {
+            font-size: 13px;
+            color: rgba(255,255,255,0.9);
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        
+        .ai-features {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+        
+        .feature-tag {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            color: white;
+        }
+        
+        .ai-button {
+            width: 100%;
+            background: white;
+            color: #6366f1;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .ai-button:active {
+            transform: scale(0.98);
+        }
+        
+        /* 底部按钮 */
+        .bottom-button {
+            margin: 30px 15px;
+            padding: 16px;
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <!-- 状态栏 -->
+            <div class="status-bar">
+                <div>10:05</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <!-- 头部 -->
+            <div class="header">
+                报修完成
+            </div>
+            
+            <!-- 成功图标区 -->
+            <div class="success-section">
+                <div class="success-icon">✓</div>
+                <div class="success-title">报修成功</div>
+                <div class="success-desc">工单已生成并派发给维修人员</div>
+            </div>
+            
+            <!-- 工单信息 -->
+            <div class="order-info">
+                <div class="order-title">维修工单信息</div>
+                <div class="order-item">
+                    <span class="order-label">机井名称：</span>
+                    <span class="order-value">ZQZ0586</span>
+                </div>
+                <div class="order-item">
+                    <span class="order-label">机井编号：</span>
+                    <span class="order-value">ZQZ0586</span>
+                </div>
+                <div class="order-item">
+                    <span class="order-label">故障类型：</span>
+                    <span class="order-value">其它</span>
+                </div>
+            </div>
+            
+            <!-- 🎯 AI服务引流卡片 -->
+            <div class="ai-service-card" onclick="jumpToAI()">
+                <div class="ai-badge">
+                    <span>🤖</span>
+                    <span>AI智能服务</span>
+                </div>
+                <div class="ai-title">
+                    <span>等待维修时，用AI给庄稼做个免费体检？</span>
+                </div>
+                <div class="ai-desc">
+                    拍张照片就能识别病虫害，AI专家实时给出防治方案，让您的作物健康成长
+                </div>
+                <div class="ai-features">
+                    <div class="feature-tag">🔍 智能识别</div>
+                    <div class="feature-tag">⚡ 秒出结果</div>
+                    <div class="feature-tag">📋 防治方案</div>
+                    <div class="feature-tag">🆓 完全免费</div>
+                </div>
+                <button class="ai-button">
+                    <span>立即体验AI诊断</span>
+                    <span>→</span>
+                </button>
+            </div>
+            
+            <!-- 底部返回按钮 -->
+            <button class="bottom-button" onclick="window.location.href='jijing-home.html'">
+                返回首页
+            </button>
+            
+            <div style="height: 30px;"></div>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function jumpToAI() {
+            // 实际场景中会携带参数
+            // source=jijing_repair_success
+            // location=鄢城镇丁标村（透传的行政区域）
+            setTimeout(() => {
+                window.location.href = 'ai-diagnosis.html?source=jijing_repair_success&location=鄢城镇丁标村';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+

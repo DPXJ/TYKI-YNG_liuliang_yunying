@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>领取成功 - 云农谷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode { background: none !important; padding: 0 !important; margin: 0 !important; width: 100%; height: auto; overflow: visible; display: block !important; justify-content: flex-start !important; align-items: flex-start !important; }
+        body.embed-mode { min-height: 100%; }
+        body.embed-mode .phone-frame { width: 100% !important; height: auto !important; min-height: 100% !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; position: relative; }
+        body.embed-mode .phone-notch { display: none !important; }
+        body.embed-mode .phone-screen { border-radius: 0 !important; width: 100% !important; min-height: 100% !important; height: auto !important; overflow-y: visible !important; overflow-x: hidden; background: #f5f5f5; }
+        body.embed-mode .status-bar { display: none !important; }
+        body.embed-mode .phone-screen::-webkit-scrollbar { width: 0; display: none; }
+        body.embed-mode .phone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        body.embed-mode .back-button { display: none !important; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        /* 成功图标区 */
+        .success-section {
+            text-align: center;
+            padding: 60px 20px 40px;
+            background: linear-gradient(180deg, #f0fdf4 0%, white 100%);
+        }
+        
+        .success-icon {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+            margin: 0 auto 25px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            animation: scaleIn 0.5s ease;
+        }
+        
+        @keyframes scaleIn {
+            from {
+                transform: scale(0);
+            }
+            to {
+                transform: scale(1);
+            }
+        }
+        
+        .success-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .success-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        /* 内容区 */
+        .content-section {
+            padding: 20px 20px 30px;
+        }
+        
+        /* 资料包列表 */
+        .material-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .material-item {
+            background: #f9fafb;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .material-item:hover {
+            background: #f0fdf4;
+            transform: translateX(5px);
+        }
+        
+        .material-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .item-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .item-info {
+            flex: 1;
+        }
+        
+        .item-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        
+        .item-size {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .item-action {
+            color: #10b981;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        /* 访问链接 */
+        .link-section {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .link-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .link-desc {
+            font-size: 13px;
+            opacity: 0.95;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .link-box {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .link-text {
+            flex: 1;
+            font-size: 12px;
+            font-family: monospace;
+            word-break: break-all;
+        }
+        
+        .copy-button {
+            background: white;
+            color: #f59e0b;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        
+        .link-password {
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        /* 推荐功能 */
+        .recommend-section {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+        
+        .recommend-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .recommend-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        
+        .recommend-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .recommend-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+        }
+        
+        .recommend-icon {
+            width: 48px;
+            height: 48px;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 10px;
+        }
+        
+        .recommend-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #059669;
+            margin-bottom: 5px;
+        }
+        
+        .recommend-desc {
+            font-size: 11px;
+            color: #6b7280;
+            line-height: 1.4;
+        }
+        
+        /* 底部按钮 */
+        .bottom-actions {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 15px 20px 25px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .primary-button {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>10:05</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <!-- 成功图标区 -->
+            <div class="success-section">
+                <div class="success-icon">✓</div>
+                <div class="success-title">领取成功！</div>
+                <div class="success-desc">
+                    资料包已为您准备好<br>
+                    快来查看学习吧
+                </div>
+            </div>
+            
+            <!-- 内容区 -->
+            <div class="content-section">
+                <!-- 资料包列表 -->
+                <div class="material-section">
+                    <div class="section-title">
+                        <span>📦</span>
+                        <span>您的资料包</span>
+                    </div>
+                    
+                    <div class="material-item" onclick="alert('在线预览：机井管护操作手册')">
+                        <div class="item-icon">📖</div>
+                        <div class="item-info">
+                            <div class="item-name">机井管护操作手册</div>
+                            <div class="item-size">PDF · 8.5MB</div>
+                        </div>
+                        <div class="item-action">查看 →</div>
+                    </div>
+                    
+                    <div class="material-item" onclick="alert('在线播放：实操视频教程')">
+                        <div class="item-icon">🎬</div>
+                        <div class="item-info">
+                            <div class="item-name">实操视频教程</div>
+                            <div class="item-size">视频 · 12分钟</div>
+                        </div>
+                        <div class="item-action">播放 →</div>
+                    </div>
+                    
+                    <div class="material-item" onclick="alert('在线预览：故障诊断指南')">
+                        <div class="item-icon">📋</div>
+                        <div class="item-info">
+                            <div class="item-name">常见故障诊断指南</div>
+                            <div class="item-size">PDF · 3.2MB</div>
+                        </div>
+                        <div class="item-action">查看 →</div>
+                    </div>
+                    
+                    <div class="material-item" onclick="alert('在线预览：应急处理方案')">
+                        <div class="item-icon">🔧</div>
+                        <div class="item-info">
+                            <div class="item-name">应急维修处理方案</div>
+                            <div class="item-size">PDF · 2.8MB</div>
+                        </div>
+                        <div class="item-action">查看 →</div>
+                    </div>
+                </div>
+                
+                <!-- 网盘链接（可选方案） -->
+                <div class="link-section">
+                    <div class="link-title">
+                        <span>☁️</span>
+                        <span>备用下载方式</span>
+                    </div>
+                    <div class="link-desc">
+                        如需离线查看，可通过百度网盘下载完整资料包
+                    </div>
+                    <div class="link-box">
+                        <div class="link-text">https://pan.baidu.com/s/1abc...</div>
+                        <button class="copy-button" onclick="copyLink()">复制</button>
+                    </div>
+                    <div class="link-password">提取码：<strong>yng2024</strong></div>
+                </div>
+                
+                <!-- 推荐功能 -->
+                <div class="recommend-section">
+                    <div class="recommend-title">🌟 更多实用功能</div>
+                    <div class="recommend-grid">
+                        <div class="recommend-card" onclick="window.location.href='ai-diagnosis.html'">
+                            <div class="recommend-icon">🤖</div>
+                            <div class="recommend-name">AI病虫害识别</div>
+                            <div class="recommend-desc">拍照识别，3秒出结果</div>
+                        </div>
+                        
+                        <div class="recommend-card" onclick="window.location.href='weather-detail.html'">
+                            <div class="recommend-icon">🌤️</div>
+                            <div class="recommend-name">天气预报</div>
+                            <div class="recommend-desc">15天预报+灌溉建议</div>
+                        </div>
+                        
+                        <div class="recommend-card" onclick="alert('农事方案功能')">
+                            <div class="recommend-icon">📅</div>
+                            <div class="recommend-name">农事方案</div>
+                            <div class="recommend-desc">专家定制管理方案</div>
+                        </div>
+                        
+                        <div class="recommend-card" onclick="alert('测土配方功能')">
+                            <div class="recommend-icon">🌱</div>
+                            <div class="recommend-name">测土配方</div>
+                            <div class="recommend-desc">科学施肥省钱增产</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部按钮 -->
+            <div class="bottom-actions">
+                <button class="primary-button" onclick="window.location.href='jijing-home.html'">
+                    开始探索云农谷
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function copyLink() {
+            const link = 'https://pan.baidu.com/s/1abc...';
+            
+            // 实际场景中会调用剪贴板API
+            alert('链接已复制到剪贴板！\n\n' + link + '\n\n提取码：yng2024');
+        }
+    </script>
+</body>
+</html>
+

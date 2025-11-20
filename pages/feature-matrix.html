@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能分享矩阵 - 云农谷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode { background: none !important; padding: 0 !important; margin: 0 !important; width: 100%; height: auto; overflow: visible; display: block !important; justify-content: flex-start !important; align-items: flex-start !important; }
+        body.embed-mode { min-height: 100%; }
+        body.embed-mode .phone-frame { width: 100% !important; height: auto !important; min-height: 100% !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; position: relative; }
+        body.embed-mode .phone-notch { display: none !important; }
+        body.embed-mode .phone-screen { border-radius: 0 !important; width: 100% !important; min-height: 100% !important; height: auto !important; overflow-y: visible !important; overflow-x: hidden; background: #f5f5f5; }
+        body.embed-mode .status-bar { display: none !important; }
+        body.embed-mode .phone-screen::-webkit-scrollbar { width: 0; display: none; }
+        body.embed-mode .phone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        body.embed-mode .back-button { display: none !important; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+        }
+        
+        .back-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 20px 15px;
+        }
+        
+        .page-intro {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .intro-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 10px;
+        }
+        
+        .intro-desc {
+            font-size: 14px;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+        
+        /* 功能卡片列表 */
+        .feature-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+        }
+        
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        
+        .icon-ai { background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%); }
+        .icon-soil { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .icon-calendar { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .icon-robot { background: linear-gradient(135deg, #ec4899 0%, #db2777 100%); }
+        .icon-shop { background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%); }
+        .icon-effect { background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%); }
+        
+        .feature-info {
+            flex: 1;
+        }
+        
+        .feature-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .feature-tag {
+            display: inline-block;
+            background: #f0fdf4;
+            color: #059669;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .feature-desc {
+            font-size: 13px;
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        
+        .share-example {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+        }
+        
+        .example-label {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 5px;
+        }
+        
+        .example-text {
+            font-size: 13px;
+            color: #374151;
+            font-style: italic;
+            line-height: 1.5;
+        }
+        
+        .feature-stats {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        .stat {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .share-button {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>10:05</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <div class="header">
+                <div class="back-icon" onclick="history.back()">←</div>
+                <div class="header-title">功能分享矩阵</div>
+            </div>
+            
+            <div class="content">
+                <!-- 页面介绍 -->
+                <div class="page-intro">
+                    <div class="intro-title">🎯 裂变增长策略</div>
+                    <div class="intro-desc">
+                        以下是云农谷核心功能的分享配置，每个功能都支持独立分享到微信群和朋友圈，通过社交裂变实现用户增长
+                    </div>
+                </div>
+                
+                <!-- 功能卡片列表 -->
+                <div class="feature-list">
+                    <!-- AI病虫害识别 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-ai">🤖</div>
+                            <div class="feature-info">
+                                <div class="feature-name">AI病虫害识别</div>
+                                <span class="feature-tag">高频使用</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            拍照识别作物病虫害，3秒出结果，准确率98%，并提供详细防治方案
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "我家麦子叶发黄，用这个一拍就知道啥病，你也试试！"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：种植户</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：38%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('ai')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 测土配方 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-soil">🌱</div>
+                            <div class="feature-info">
+                                <div class="feature-name">测土配方查询</div>
+                                <span class="feature-tag">专业工具</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            查询村庄土壤检测数据，获取科学施肥配方，省钱增产
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "别瞎施肥了！查查咱村土壤缺啥，科学配方省钱增产。"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：种植户/合作社</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：28%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('soil')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 农事日历 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-calendar">📅</div>
+                            <div class="feature-info">
+                                <div class="feature-name">农事日历/方案</div>
+                                <span class="feature-tag">智能管理</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            专家定制的种植管理方案，按时节推送农事提醒
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "专家定制的冬小麦拔节期管理方案，点击一键套用。"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：种植大户</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：32%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('calendar')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 智能体广场 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-robot">🎙️</div>
+                            <div class="feature-info">
+                                <div class="feature-name">智能体广场</div>
+                                <span class="feature-tag">AI助手</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            AI农业专家24小时在线答疑，啥都知道
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "有问题问这个AI农业专家，24小时在线，啥都知道。"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：所有用户</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：25%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('agent')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 优选商品 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-shop">🛒</div>
+                            <div class="feature-info">
+                                <div class="feature-name">优选商品/团购</div>
+                                <span class="feature-tag">电商</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            农资团购价格优惠，村里都在用
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "村里都在团购这款水肥一体机，价格比镇上便宜多了。"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：农机手/大户</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：42%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('shop')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                    
+                    <!-- 农事服务效果 -->
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon icon-effect">📸</div>
+                            <div class="feature-info">
+                                <div class="feature-name">农事服务效果</div>
+                                <span class="feature-tag">效果评估</span>
+                            </div>
+                        </div>
+                        <div class="feature-desc">
+                            AI评估除草、施肥等作业效果，生成报告
+                        </div>
+                        <div class="share-example">
+                            <div class="example-label">分享文案示例：</div>
+                            <div class="example-text">
+                                "打药效果好不好？AI帮你出报告"
+                            </div>
+                        </div>
+                        <div class="feature-stats">
+                            <div class="stat">
+                                <span>👁️</span>
+                                <span>目标人群：种植大户</span>
+                            </div>
+                            <div class="stat">
+                                <span>📊</span>
+                                <span>转化率：30%</span>
+                            </div>
+                        </div>
+                        <button class="share-button" onclick="sharePage('effect')">
+                            <span>↗️</span>
+                            <span>分享此功能</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div style="height: 30px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function sharePage(feature) {
+            const shareConfigs = {
+                ai: {
+                    title: 'AI病虫害识别',
+                    desc: '我家麦子叶发黄，用这个一拍就知道啥病，你也试试！',
+                    path: 'pages/ai-diagnosis',
+                    image: 'https://cdn.example.com/share/ai.jpg'
+                },
+                soil: {
+                    title: '测土配方查询',
+                    desc: '别瞎施肥了！查查咱村土壤缺啥，科学配方省钱增产',
+                    path: 'pages/soil-test',
+                    image: 'https://cdn.example.com/share/soil.jpg'
+                },
+                calendar: {
+                    title: '农事方案',
+                    desc: '专家定制的冬小麦拔节期管理方案，点击一键套用',
+                    path: 'pages/farm-calendar',
+                    image: 'https://cdn.example.com/share/calendar.jpg'
+                },
+                agent: {
+                    title: 'AI农业专家',
+                    desc: '有问题问这个AI农业专家，24小时在线，啥都知道',
+                    path: 'pages/ai-agent',
+                    image: 'https://cdn.example.com/share/agent.jpg'
+                },
+                shop: {
+                    title: '优选商品团购',
+                    desc: '村里都在团购这款水肥一体机，价格比镇上便宜多了',
+                    path: 'pages/shop',
+                    image: 'https://cdn.example.com/share/shop.jpg'
+                },
+                effect: {
+                    title: '农事服务效果',
+                    desc: '打药效果好不好？AI帮你出报告',
+                    path: 'pages/service-effect',
+                    image: 'https://cdn.example.com/share/effect.jpg'
+                }
+            };
+            
+            const config = shareConfigs[feature];
+            
+            alert(`分享配置\n\n标题: ${config.title}\n描述: ${config.desc}\n路径: ${config.path}\n图片: ${config.image}\n\n实际场景中会调用微信分享API`);
+        }
+    </script>
+</body>
+</html>
+

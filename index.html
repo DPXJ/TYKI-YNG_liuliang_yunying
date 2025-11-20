@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>云农谷引流原型 - 功能导航</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #f5f7fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 主容器 */
+        .app-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* 左侧导航栏 */
+        .sidebar {
+            width: 280px;
+            background: white;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        /* 侧边栏头部 */
+        .sidebar-header {
+            padding: 25px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+        
+        /* 导航菜单 */
+        .nav-menu {
+            padding: 15px 0;
+            flex: 1;
+        }
+        
+        .menu-section {
+            margin-bottom: 5px;
+        }
+        
+        .menu-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .menu-item:hover {
+            background: #f5f7fa;
+        }
+        
+        .menu-item.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, transparent 100%);
+            color: #667eea;
+            font-weight: 500;
+            border-left: 3px solid #667eea;
+        }
+        
+        .menu-item-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .menu-icon {
+            font-size: 16px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .menu-arrow {
+            font-size: 12px;
+            transition: transform 0.3s;
+        }
+        
+        .menu-arrow.expanded {
+            transform: rotate(90deg);
+        }
+        
+        /* 二级菜单 */
+        .submenu {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            background: #fafbfc;
+        }
+        
+        .submenu.expanded {
+            max-height: 500px;
+        }
+        
+        .submenu-item {
+            padding: 10px 20px 10px 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #666;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .submenu-item:hover {
+            background: #f0f2f5;
+            color: #667eea;
+        }
+        
+        .submenu-item.active {
+            color: #667eea;
+            font-weight: 500;
+            background: #f0f2f5;
+        }
+        
+        .submenu-icon {
+            width: 4px;
+            height: 4px;
+            background: #999;
+            border-radius: 50%;
+        }
+        
+        .submenu-item.active .submenu-icon {
+            background: #667eea;
+        }
+        
+        /* 右侧内容区 */
+        .content-area {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            overflow: auto;
+        }
+        
+        /* 手机壳容器 */
+        .phone-container {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* 欢迎页面 */
+        .welcome-page {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .welcome-icon {
+            font-size: 80px;
+            margin-bottom: 25px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .welcome-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        
+        .welcome-hint {
+            font-size: 14px;
+            opacity: 0.8;
+            padding: 12px 20px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* iframe样式 */
+        .phone-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: white;
+            display: block;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        /* 页面信息 */
+        .page-info {
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+        }
+        
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .page-desc {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        
+        /* 底部信息 */
+        .sidebar-footer {
+            padding: 15px 20px;
+            border-top: 1px solid #e5e7eb;
+            background: #fafbfc;
+        }
+        
+        .footer-text {
+            font-size: 11px;
+            color: #999;
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        /* 滚动条样式 */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 左侧导航栏 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <span>🌾</span>
+                    <span>云农谷引流原型</span>
+                </div>
+                <div class="sidebar-subtitle">数字机井 → 云农谷 流量运营</div>
+            </div>
+            
+            <div class="nav-menu">
+                <!-- 模块一 -->
+                <div class="menu-section">
+                    <div class="menu-item" onclick="toggleMenu('module1')">
+                        <div class="menu-item-content">
+                            <span class="menu-icon">📌</span>
+                            <span>模块一：首页资源位引流</span>
+                        </div>
+                        <span class="menu-arrow" id="arrow-module1">▶</span>
+                    </div>
+                    <div class="submenu" id="submenu-module1">
+                        <div class="submenu-item" onclick="loadPage('pages/jijing-home.html', '机井首页（带Banner）', '首页顶部增加资料包引流Banner', this)">
+                            <span class="submenu-icon"></span>
+                            <span>机井首页（带Banner）</span>
+                        </div>
+                        <div class="submenu-item" onclick="loadPage('pages/yunnongu-landing.html', '云农谷落地页', '资料包领取授权页面', this)">
+                            <span class="submenu-icon"></span>
+                            <span>云农谷落地页（资料包）</span>
+                        </div>
+                        <div class="submenu-item" onclick="loadPage('pages/material-success.html', '资料领取成功', '展示资料包内容和推荐功能', this)">
+                            <span class="submenu-icon"></span>
+                            <span>资料领取成功页</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 模块二 -->
+                <div class="menu-section">
+                    <div class="menu-item" onclick="toggleMenu('module2')">
+                        <div class="menu-item-content">
+                            <span class="menu-icon">🔧</span>
+                            <span>模块二：场景化后链路引流</span>
+                        </div>
+                        <span class="menu-arrow" id="arrow-module2">▶</span>
+                    </div>
+                    <div class="submenu" id="submenu-module2">
+                        <div class="submenu-item" onclick="loadPage('pages/repair-success.html', '报修成功页', '推荐AI病虫害识别服务', this)">
+                            <span class="submenu-icon"></span>
+                            <span>报修成功页（带AI入口）</span>
+                        </div>
+                        <div class="submenu-item" onclick="loadPage('pages/jijing-detail.html', '机井详情页', '提供天气信息和灌溉建议', this)">
+                            <span class="submenu-icon"></span>
+                            <span>机井详情页（带气象入口）</span>
+                        </div>
+                        <!-- 暂时隐藏 - AI病虫害识别页 -->
+                        <!-- <div class="submenu-item" onclick="loadPage('pages/ai-diagnosis.html', 'AI病虫害识别', '拍照识别作物病虫害', this)">
+                            <span class="submenu-icon"></span>
+                            <span>AI病虫害识别页</span>
+                        </div> -->
+                        <!-- 暂时隐藏 - 天气详情页 -->
+                        <!-- <div class="submenu-item" onclick="loadPage('pages/weather-detail.html', '天气详情', '15天预报+灌溉建议', this)">
+                            <span class="submenu-icon"></span>
+                            <span>天气详情页</span>
+                        </div> -->
+                    </div>
+                </div>
+                
+                <!-- 模块三 -->
+                <div class="menu-section">
+                    <div class="menu-item" onclick="toggleMenu('module3')">
+                        <div class="menu-item-content">
+                            <span class="menu-icon">🔗</span>
+                            <span>模块三：分享与裂变矩阵</span>
+                        </div>
+                        <span class="menu-arrow" id="arrow-module3">▶</span>
+                    </div>
+                    <div class="submenu" id="submenu-module3">
+                        <div class="submenu-item" onclick="loadPage('pages/share-demo.html', '分享功能演示', '展示分享面板和卡片样式', this)">
+                            <span class="submenu-icon"></span>
+                            <span>分享功能演示</span>
+                        </div>
+                        <div class="submenu-item" onclick="loadPage('pages/share-landing.html', '分享落地页', '朋友推荐场景落地页', this)">
+                            <span class="submenu-icon"></span>
+                            <span>分享落地页</span>
+                        </div>
+                        <div class="submenu-item" onclick="loadPage('pages/feature-matrix.html', '功能分享矩阵', '6大核心功能分享配置', this)">
+                            <span class="submenu-icon"></span>
+                            <span>功能分享矩阵</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <div class="footer-text">
+                    原型设计 V1.0<br>
+                    静态演示，不含后端逻辑
+                </div>
+            </div>
+        </div>
+        
+        <!-- 右侧内容区 -->
+        <div class="content-area">
+            <div class="phone-container">
+                <div class="phone-notch"></div>
+                <div class="phone-screen">
+                    <div class="welcome-page" id="phoneContent">
+                        <div class="welcome-icon">🌾</div>
+                        <div class="welcome-title">云农谷引流原型</div>
+                        <div class="welcome-subtitle">
+                            将机井平台2万+用户低成本引流至云农谷<br>
+                            通过利益驱动、场景关联、社交裂变实现增长
+                        </div>
+                        <div class="welcome-hint">
+                            👈 请点击左侧菜单查看各个功能页面
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="page-info" id="pageInfo" style="display: none;">
+                <div class="page-title" id="pageTitle"></div>
+                <div class="page-desc" id="pageDesc"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 切换菜单展开/收起
+        function toggleMenu(moduleId) {
+            const submenu = document.getElementById('submenu-' + moduleId);
+            const arrow = document.getElementById('arrow-' + moduleId);
+            
+            submenu.classList.toggle('expanded');
+            arrow.classList.toggle('expanded');
+        }
+        
+        // 加载页面
+        function loadPage(url, title, desc, element) {
+            // 移除所有active状态
+            document.querySelectorAll('.submenu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 添加当前项的active状态
+            if (element) {
+                element.classList.add('active');
+            }
+            
+            // 更新手机屏幕内容 - 添加embed参数让子页面知道在iframe中
+            const phoneContent = document.getElementById('phoneContent');
+            const embedUrl = url + (url.includes('?') ? '&' : '?') + 'embed=true';
+            phoneContent.innerHTML = '<iframe class="phone-iframe" src="' + embedUrl + '"></iframe>';
+            
+            // 显示页面信息
+            document.getElementById('pageInfo').style.display = 'block';
+            document.getElementById('pageTitle').textContent = title;
+            document.getElementById('pageDesc').textContent = desc;
+        }
+        
+        // 默认展开第一个模块
+        window.onload = function() {
+            toggleMenu('module1');
+        };
+    </script>
+</body>
+</html>

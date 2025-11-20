@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>分享落地页 - 云农谷</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode { background: none !important; padding: 0 !important; margin: 0 !important; width: 100%; height: auto; overflow: visible; display: block !important; justify-content: flex-start !important; align-items: flex-start !important; }
+        body.embed-mode { min-height: 100%; }
+        body.embed-mode .phone-frame { width: 100% !important; height: auto !important; min-height: 100% !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; position: relative; }
+        body.embed-mode .phone-notch { display: none !important; }
+        body.embed-mode .phone-screen { border-radius: 0 !important; width: 100% !important; min-height: 100% !important; height: auto !important; overflow-y: visible !important; overflow-x: hidden; background: #f5f5f5; }
+        body.embed-mode .status-bar { display: none !important; }
+        body.embed-mode .phone-screen::-webkit-scrollbar { width: 0; display: none; }
+        body.embed-mode .phone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        body.embed-mode .back-button { display: none !important; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: white;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 头部Banner */
+        .hero-section {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 50px 25px;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -30%;
+            width: 400px;
+            height: 400px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -20%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 50%;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.25);
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .hero-logo {
+            width: 80px;
+            height: 80px;
+            background: white;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin: 0 auto 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .hero-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .hero-subtitle {
+            font-size: 15px;
+            opacity: 0.95;
+            line-height: 1.6;
+        }
+        
+        /* 内容区 */
+        .content-section {
+            padding: 30px 20px;
+        }
+        
+        .from-friend {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+        
+        .friend-info {
+            flex: 1;
+        }
+        
+        .friend-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #92400e;
+            margin-bottom: 3px;
+        }
+        
+        .friend-action {
+            font-size: 13px;
+            color: #b45309;
+        }
+        
+        .main-content {
+            margin-bottom: 25px;
+        }
+        
+        .content-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        .content-desc {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-box {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .highlight-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #059669;
+            margin-bottom: 10px;
+        }
+        
+        .highlight-list {
+            list-style: none;
+        }
+        
+        .highlight-list li {
+            font-size: 14px;
+            color: #374151;
+            padding: 6px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .highlight-list li::before {
+            content: '✓';
+            color: #10b981;
+            font-weight: 600;
+            font-size: 16px;
+        }
+        
+        /* 信任背书 */
+        .trust-section {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .trust-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .trust-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .stat-item {
+            padding: 10px;
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10b981;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        
+        /* 底部CTA */
+        .cta-section {
+            position: sticky;
+            bottom: 0;
+            background: white;
+            padding: 15px 20px 25px;
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.05);
+        }
+        
+        .cta-button {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+        }
+        
+        .cta-button:active {
+            transform: scale(0.98);
+        }
+        
+        .cta-hint {
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <!-- Hero Section -->
+            <div class="hero-section">
+                <div class="hero-content">
+                    <div class="hero-badge">🎁 朋友推荐</div>
+                    <div class="hero-logo">🌾</div>
+                    <div class="hero-title">云农谷</div>
+                    <div class="hero-subtitle">AI赋能农业，科学种植更轻松</div>
+                </div>
+            </div>
+            
+            <!-- Content Section -->
+            <div class="content-section">
+                <!-- 来自朋友 -->
+                <div class="from-friend">
+                    <div class="friend-avatar">👨</div>
+                    <div class="friend-info">
+                        <div class="friend-name">张大哥</div>
+                        <div class="friend-action">向你推荐了这个小程序</div>
+                    </div>
+                </div>
+                
+                <!-- 主要内容 -->
+                <div class="main-content">
+                    <div class="content-title">
+                        我家麦子叶发黄，用AI一拍就知道什么病！
+                    </div>
+                    <div class="content-desc">
+                        以前遇到病虫害还要找专家，现在用云农谷的AI识别，拍张照片3秒就出结果，还有详细的防治方案，真是太方便了！
+                    </div>
+                    
+                    <!-- 核心功能 -->
+                    <div class="highlight-box">
+                        <div class="highlight-title">🌟 核心功能</div>
+                        <ul class="highlight-list">
+                            <li>AI病虫害识别，准确率98%</li>
+                            <li>智能天气预报+灌溉建议</li>
+                            <li>测土配方科学施肥</li>
+                            <li>农事方案智能推荐</li>
+                            <li>农技专家在线答疑</li>
+                        </ul>
+                    </div>
+                    
+                    <!-- 信任背书 -->
+                    <div class="trust-section">
+                        <div class="trust-title">已有众多用户选择云农谷</div>
+                        <div class="trust-stats">
+                            <div class="stat-item">
+                                <div class="stat-number">50万+</div>
+                                <div class="stat-label">用户</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">100万+</div>
+                                <div class="stat-label">识别次数</div>
+                            </div>
+                            <div class="stat-item">
+                                <div class="stat-number">98%</div>
+                                <div class="stat-label">好评率</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <button class="cta-button" onclick="openMiniProgram()">
+                    <span>🚀</span>
+                    <span>立即打开小程序</span>
+                </button>
+                <div class="cta-hint">免费使用 · 3秒识别 · 专家方案</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function openMiniProgram() {
+            // 实际场景中会：
+            // 1. 检测用户是否已注册
+            // 2. 未注册则引导授权
+            // 3. 已注册则直接跳转到对应功能页
+            // 4. 记录来源参数用于数据分析
+            
+            alert('正在打开小程序...\n\n实际场景中会:\n1. 检测用户状态\n2. 跳转到AI识别页面\n3. 记录来源: source=friend_share&sharer_id=xxx');
+            
+            setTimeout(() => {
+                window.location.href = 'ai-diagnosis.html?source=friend_share&from=share_landing';
+            }, 1000);
+        }
+        
+        // 获取URL参数（用于数据追踪）
+        const urlParams = new URLSearchParams(window.location.search);
+        const shareId = urlParams.get('share_id');
+        const sharerName = urlParams.get('sharer_name');
+        
+        console.log('分享ID:', shareId);
+        console.log('分享者:', sharerName);
+        
+        // 如果有分享者信息，显示在页面上
+        if (sharerName) {
+            document.querySelector('.friend-name').textContent = sharerName;
+        }
+    </script>
+</body>
+</html>
+

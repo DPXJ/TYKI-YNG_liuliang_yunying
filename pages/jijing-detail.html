@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字机井 - 气象信息引流</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* 嵌入模式 */
+        html.embed-mode, body.embed-mode { background: none !important; padding: 0 !important; margin: 0 !important; width: 100%; height: auto; overflow: visible; display: block !important; justify-content: flex-start !important; align-items: flex-start !important; }
+        body.embed-mode { min-height: 100%; }
+        body.embed-mode .phone-frame { width: 100% !important; height: auto !important; min-height: 100% !important; border-radius: 0 !important; padding: 0 !important; margin: 0 !important; box-shadow: none !important; background: transparent !important; position: relative; }
+        body.embed-mode .phone-notch { display: none !important; }
+        body.embed-mode .phone-screen { border-radius: 0 !important; width: 100% !important; min-height: 100% !important; height: auto !important; overflow-y: visible !important; overflow-x: hidden; background: #f5f5f5; }
+        body.embed-mode .status-bar { display: none !important; }
+        body.embed-mode .phone-screen::-webkit-scrollbar { width: 0; display: none; }
+        body.embed-mode .phone-screen { -ms-overflow-style: none; scrollbar-width: none; }
+        body.embed-mode .back-button { display: none !important; }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            background: #000;
+            border-radius: 40px;
+            padding: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            position: relative;
+        }
+        
+        .phone-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 150px;
+            height: 30px;
+            background: #000;
+            border-radius: 0 0 20px 20px;
+            z-index: 10;
+        }
+        
+        .phone-screen {
+            width: 100%;
+            height: 100%;
+            background: #f5f5f5;
+            border-radius: 32px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        .status-bar {
+            height: 44px;
+            background: #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 12px;
+        }
+        
+        .status-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .header {
+            background: #3b82f6;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+        }
+        
+        .back-icon {
+            font-size: 20px;
+            cursor: pointer;
+        }
+        
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        
+        .content {
+            padding: 15px;
+        }
+        
+        /* 基础信息卡片 */
+        .info-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            color: #6b7280;
+        }
+        
+        .info-value {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        /* 🎯 气象信息引流区 - 核心功能 */
+        .weather-section {
+            background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(14, 165, 233, 0.3);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .weather-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50px;
+            width: 200px;
+            height: 200%;
+            background: rgba(255,255,255,0.1);
+            transform: rotate(25deg);
+        }
+        
+        .weather-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .weather-icon-large {
+            font-size: 40px;
+        }
+        
+        .weather-info {
+            flex: 1;
+        }
+        
+        .weather-temp {
+            font-size: 32px;
+            font-weight: 600;
+        }
+        
+        .weather-desc {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .weather-item {
+            background: rgba(255,255,255,0.15);
+            padding: 12px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .weather-item:hover {
+            background: rgba(255,255,255,0.25);
+            transform: scale(1.05);
+        }
+        
+        .weather-item-icon {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .weather-item-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 3px;
+        }
+        
+        .weather-item-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .irrigation-tip {
+            background: rgba(255,255,255,0.2);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+        
+        .irrigation-tip strong {
+            font-weight: 600;
+        }
+        
+        .weather-button {
+            width: 100%;
+            background: white;
+            color: #0ea5e9;
+            border: none;
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+        }
+        
+        .weather-button:active {
+            transform: scale(0.98);
+        }
+        
+        /* 灾害预警卡片 */
+        .disaster-card {
+            background: linear-gradient(135deg, #f59e0b 0%, #f97316 100%);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            color: white;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .disaster-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .disaster-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .disaster-icon {
+            font-size: 24px;
+        }
+        
+        .disaster-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .disaster-desc {
+            font-size: 13px;
+            opacity: 0.9;
+            line-height: 1.5;
+        }
+        
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            color: #667eea;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+        
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回导航</a>
+    
+    <div class="phone-frame">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+            <div class="status-bar">
+                <div>10:05</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
+            
+            <div class="header">
+                <div class="back-icon" onclick="window.location.href='jijing-home.html'">←</div>
+                <div class="header-title">数字机井</div>
+            </div>
+            
+            <div class="content">
+                <!-- 基础信息 -->
+                <div class="info-card">
+                    <div class="card-title">基础信息</div>
+                    <div class="info-row">
+                        <span class="info-label">机井位置</span>
+                        <span class="info-value">鄢城镇丁标村</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">机井编号</span>
+                        <span class="info-value">CC585</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">行政区域</span>
+                        <span class="info-value">鄢城镇/丁标村</span>
+                    </div>
+                    <div class="info-row">
+                        <span class="info-label">故障类型</span>
+                        <span class="info-value">无电</span>
+                    </div>
+                </div>
+                
+                <!-- 🎯 天气信息引流区 -->
+                <div class="weather-section">
+                    <div class="weather-header">
+                        <div class="weather-icon-large">☀️</div>
+                        <div class="weather-info">
+                            <div class="weather-temp">22°C</div>
+                            <div class="weather-desc">晴转多云 · 商丘市</div>
+                        </div>
+                    </div>
+                    
+                    <div class="weather-grid">
+                        <div class="weather-item" onclick="jumpToWeather()">
+                            <div class="weather-item-icon">💨</div>
+                            <div class="weather-item-label">风力</div>
+                            <div class="weather-item-value">东北风 3级</div>
+                        </div>
+                        <div class="weather-item" onclick="jumpToWeather()">
+                            <div class="weather-item-icon">💧</div>
+                            <div class="weather-item-label">湿度</div>
+                            <div class="weather-item-value">65%</div>
+                        </div>
+                        <div class="weather-item" onclick="jumpToWeather()">
+                            <div class="weather-item-icon">🌡️</div>
+                            <div class="weather-item-label">土壤墒情</div>
+                            <div class="weather-item-value">适中</div>
+                        </div>
+                        <div class="weather-item" onclick="jumpToWeather()">
+                            <div class="weather-item-icon">🌧️</div>
+                            <div class="weather-item-label">降雨概率</div>
+                            <div class="weather-item-value">15%</div>
+                        </div>
+                    </div>
+                    
+                    <div class="irrigation-tip">
+                        <strong>💡 灌溉建议：</strong>未来2小时无雨，土壤墒情适中，现在是灌溉的好时机
+                    </div>
+                    
+                    <button class="weather-button" onclick="jumpToWeather()">
+                        <span>查看未来15天天气预报</span>
+                        <span>→</span>
+                    </button>
+                </div>
+                
+                <!-- 灾害预警（二期功能，先预留入口） -->
+                <div class="disaster-card" onclick="alert('灾害预警功能将在新模型上线后开放')">
+                    <div class="disaster-header">
+                        <div class="disaster-icon">⚠️</div>
+                        <div class="disaster-title">灾害预警</div>
+                    </div>
+                    <div class="disaster-desc">
+                        点击查看未来天气预警信息及防范建议（功能即将上线）
+                    </div>
+                </div>
+                
+                <div style="height: 30px;"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 检测embed模式
+        if (new URLSearchParams(window.location.search).get('embed') === 'true') {
+            document.documentElement.classList.add('embed-mode');
+            document.body.classList.add('embed-mode');
+        }
+        
+        function jumpToWeather() {
+            // 实际场景中会携带参数
+            // source=jijing_detail
+            // location=鄢城镇丁标村
+            // jijing_id=CC585
+            setTimeout(() => {
+                window.location.href = 'weather-detail.html?source=jijing_detail&location=鄢城镇丁标村';
+            }, 300);
+        }
+    </script>
+</body>
+</html>
+
